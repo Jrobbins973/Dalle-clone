@@ -19,8 +19,28 @@ import { FormField, Loader } from '../components'
 
 
     
-    const generateImage = () => {
+    const generateImage = async () => {
+        if(form.prompt) {
+            try {
+                setGeneratingImg(true)
+                const response = await fetch('http://localhost:8080/api/v1/dalle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({prompt: form.prompt})
+                })
 
+                const data = await response.json()
+                setForm({...form, photo: `data:image/jpeg;base64,${data.photo}`})
+            } catch (error) {
+                alert(error)
+            } finally {
+                setGeneratingImg(false)
+            }
+        } else {
+            alert('Please enter a prompt')
+        }
     }
 
     const handleSubmit = () => {
@@ -39,7 +59,7 @@ import { FormField, Loader } from '../components'
     return (
         <section className='max-w-7xl mx-auto'>
             <div>
-                <h1 className='font-extrabold text-[#222328] text-32px'>Create</h1>
+                <h1 className='font-extrabold text-[#222328] text-[32px]'>Create</h1>
                 <p className='mt-2 text-[#666e75] text-[16px] max-w-500px'>Create imaginative and visually stunning images, through DALL-E AI and share them with the community</p>
             </div>
 
